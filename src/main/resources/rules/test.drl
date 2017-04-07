@@ -1,0 +1,9 @@
+package test
+global java.util.List myGlobalList;
+
+rule "Using a global2"
+when
+    eval( true )
+then
+    myGlobalList.add( "Hello World" );
+end
