@@ -1,0 +1,9 @@
+package test
+global java.util.List myGlobalList;
+
+rule "Using a global Test"
+when
+    eval( true )
+then
+    myGlobalList.add( "Hello World Test" );
+end
