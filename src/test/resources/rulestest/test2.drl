@@ -3,10 +3,12 @@ import com.shj.entity.LHS
 import com.shj.entity.FactResult
 rule "Using Testing2"
 when
-    $lhs:LHS()
+    $lhs:LHS(this["name"] contains "網易",
+             this["a"] matches  "心.*",
+             this["email"] matches "^[A-Za-z]+$")
     eval( true )
 then
     FactResult fr = new FactResult("Using Testing2");
-    fr.put("test1", "ttest");
+    fr.put("test1", $lhs.get("name"));
     insert(fr);
 end
