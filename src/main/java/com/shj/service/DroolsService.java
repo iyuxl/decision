@@ -124,6 +124,7 @@ public class DroolsService {
                     LOG.error("invoke rule error:" + Throwables.getStackTraceAsString(t));
                 }
             });
+            //do other things
             return lf.get();
         } catch (Exception e) {
             LOG.error("invoke rule error:" + Throwables.getStackTraceAsString(e.fillInStackTrace()));
@@ -157,6 +158,10 @@ public class DroolsService {
         reloadRules("rulestest/", files);
         KieSession kieSession = kieBase.newKieSession();
         LHS lhs = new LHS();
+        lhs.put("name", "網易風雲");
+        lhs.put("a", "心網易風雲");
+        lhs.put("names", Lists.newArrayList("馬", "天上", "天數"));
+        lhs.put("email", "aaa");
         kieSession.insert(lhs);
         kieSession.fireAllRules();
         Iterator it = kieSession.getObjects().iterator();
