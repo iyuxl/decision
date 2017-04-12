@@ -107,7 +107,8 @@ public class DroolsService {
         return true;
     }
 
-    public List<?> invokeAudit(LHS lhs) {
+    public FactResult invokeAudit(LHS lhs) {
+        long begin = System.currentTimeMillis();
         DroolsFiresTask dt = new DroolsFiresTask(kieBase, lhs);
         try {
             ListenableFuture<List<?>> lf = listeningExecutorService.submit(dt);
@@ -125,11 +126,23 @@ public class DroolsService {
                 }
             });
             //do other things
-            return lf.get();
+            List<?> result = lf.get();
+            Iterator<?> its = result.iterator();
+            while (its.hasNext()) {
+                Object o = its.next();
+                if (o instanceof FactResult) {
+                    return (FactResult)o;
+                }
+            }
         } catch (Exception e) {
             LOG.error("invoke rule error:" + Throwables.getStackTraceAsString(e.fillInStackTrace()));
+        } finally {
+            if (LOG.isInfoEnabled())
+            {
+                LOG.info("invoke rule use time :" + (System.currentTimeMillis() - begin) + " ms");
+            }
         }
-        return Collections.emptyList();
+        return new FactResult();
     }
 
     public List<?> invokeAudit(List<LHS> lists) {
