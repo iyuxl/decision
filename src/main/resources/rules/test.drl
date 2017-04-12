@@ -1,9 +1,12 @@
 package test
-global java.util.List myGlobalList;
-
-rule "Using a global2"
+import com.shj.entity.LHS
+import com.shj.entity.FactResult
+rule "Using Testing"
 when
+    $lhs:LHS()
     eval( true )
 then
-    myGlobalList.add( "Hello World" );
+    FactResult fr = new FactResult("Using Testing");
+    fr.put("test", $lhs.get("test"));
+    insert(fr);
 end

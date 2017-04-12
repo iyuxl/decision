@@ -1,5 +1,6 @@
 package com.shj;
 
+import com.shj.entity.LHS;
 import com.shj.service.DroolsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,9 @@ public class DecisionApplicationTests {
     DroolsService droolsService;
     @Test
     public void contextLoads() {
-        System.out.println(droolsService.invokeAudit());
+        LHS lhs = new LHS();
+        lhs.put("test", "天天");
+        System.out.println(droolsService.invokeAudit(lhs));
 
         try {
             System.out.println(droolsService.invokeAuditTest());
