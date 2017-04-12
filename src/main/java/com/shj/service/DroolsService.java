@@ -2,7 +2,15 @@ package com.shj.service;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.shj.entity.FactResult;
+import com.shj.entity.LHS;
+import com.shj.service.task.DroolsFiresTask;
 import org.apache.commons.io.IOUtils;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
@@ -19,8 +27,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by xiaoyaolan on 2017/3/30.
@@ -36,6 +46,14 @@ public class DroolsService {
     @Autowired
     KieServices ks;
 
+    @Autowired
+    ListeningExecutorService listeningExecutorService;
+    /**
+     * 重載規則腳本文件
+     * @param prePath
+     * @param files
+     * @return
+     */
     public boolean reloadRules(String prePath, Resource[] files) {
         final KieRepository kieRepository = ks.getRepository();
         KieFileSystem kfs = ks.newKieFileSystem();
@@ -61,6 +79,11 @@ public class DroolsService {
         return true;
     }
 
+    /**
+     * 重載規則腳本流
+     * @param inputStream
+     * @return
+     */
     public boolean reloadRules(InputStream inputStream) {
         try {
             final KieRepository kieRepository = ks.getRepository();
@@ -84,18 +107,43 @@ public class DroolsService {
         return true;
     }
 
+    public List<?> invokeAudit(LHS lhs) {
+        DroolsFiresTask dt = new DroolsFiresTask(kieBase, lhs);
+        try {
+            ListenableFuture<List<?>> lf = listeningExecutorService.submit(dt);
+            Futures.addCallback(lf, new FutureCallback<List<?>>() {
+                @Override
+                public void onSuccess(List<?> result) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.info("invoke rule success:" + JSON.toJSONString(result, true));
+                    }
+                }
 
-    public String invokeAudit() {
+                @Override
+                public void onFailure(Throwable t) {
+                    LOG.error("invoke rule error:" + Throwables.getStackTraceAsString(t));
+                }
+            });
+            return lf.get();
+        } catch (Exception e) {
+            LOG.error("invoke rule error:" + Throwables.getStackTraceAsString(e.fillInStackTrace()));
+        }
+        return Collections.emptyList();
+    }
+
+    public List<?> invokeAudit(List<LHS> lists) {
         KieSession kieSession = kieBase.newKieSession();
-        List<String> myGlobalList = Lists.newArrayList();
-        kieSession.setGlobal("myGlobalList", myGlobalList);
+        for (LHS object : lists) {
+            kieSession.insert(object);
+        }
         kieSession.fireAllRules();
         Iterator it = kieSession.getObjects().iterator();
+        List<?> rs = Lists.newArrayList(it);
         while (it.hasNext()) {
             LOG.info(JSON.toJSONString(it.next()));
         }
         kieSession.dispose();
-        return myGlobalList.get(0);
+        return rs;
     }
 
     private Resource[] listRules() throws Exception {
@@ -108,14 +156,11 @@ public class DroolsService {
         Resource[] files = listRules();
         reloadRules("rulestest/", files);
         KieSession kieSession = kieBase.newKieSession();
-        List<String> myGlobalList = Lists.newArrayList();
-        kieSession.setGlobal("myGlobalList", myGlobalList);
+        LHS lhs = new LHS();
+        kieSession.insert(lhs);
         kieSession.fireAllRules();
         Iterator it = kieSession.getObjects().iterator();
-        while (it.hasNext()) {
-            LOG.info(JSON.toJSONString(it.next()));
-        }
         kieSession.dispose();
-        return myGlobalList.get(0);
+        return JSON.toJSONString(it);
     }
 }
