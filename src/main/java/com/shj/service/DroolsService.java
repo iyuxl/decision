@@ -146,18 +146,25 @@ public class DroolsService {
     }
 
     public List<?> invokeAudit(List<LHS> lists) {
+        long begin = System.currentTimeMillis();
         KieSession kieSession = kieBase.newKieSession();
+        long kieTime = System.currentTimeMillis();
+        List<FactResult> frs = Lists.newArrayListWithExpectedSize(lists.size());
         for (LHS object : lists) {
             kieSession.insert(object);
+            kieSession.fireAllRules();
+            Iterator it = kieSession.getObjects().iterator();
+            List<?> rs = Lists.newArrayList(it);
+            while (it.hasNext()) {
+                Object o = it.next();
+                if (o instanceof FactResult) {
+                    frs.add((FactResult)o);
+                }
+            }
         }
-        kieSession.fireAllRules();
-        Iterator it = kieSession.getObjects().iterator();
-        List<?> rs = Lists.newArrayList(it);
-        while (it.hasNext()) {
-            LOG.info(JSON.toJSONString(it.next()));
-        }
+        LOG.info("create kiesession " + (kieTime - begin) + "ms, invoke rule use time :" + (System.currentTimeMillis() - begin) + " ms");
         kieSession.dispose();
-        return rs;
+        return frs;
     }
 
     private Resource[] listRules() throws Exception {
