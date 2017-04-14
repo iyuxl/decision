@@ -1,5 +1,6 @@
 package com.shj.controller;
 
+import com.google.common.collect.Lists;
 import com.shj.entity.FactResult;
 import com.shj.entity.LHS;
 import com.shj.service.DroolsService;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,5 +26,13 @@ public class DroolsController {
         LHS lhs = new LHS();
         lhs.putAll(map);
         return droolsService.invokeAudit(lhs);
+    }
+
+    @RequestMapping("/auditList")
+    public @ResponseBody List<FactResult> invokeRuleByList(@RequestBody Map map) {
+        LHS lhs = new LHS();
+        lhs.putAll(map);
+        List<LHS> lists = Lists.newArrayList(lhs);
+        return (List<FactResult>) droolsService.invokeAudit(lists);
     }
 }

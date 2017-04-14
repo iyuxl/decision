@@ -10,6 +10,7 @@ import org.kie.api.builder.*;
 import org.kie.api.runtime.KieContainer;
 import org.kie.internal.io.ResourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,10 +65,16 @@ public class DroolsConfig {
     @Autowired
     KieContainer kieContainer;
 
+    @Value("${drools.kieSession.size:50}")
+    private int kieSessionSize;
     @Bean
     public KieBase kieBase() throws IOException {
         KieBase kieBase = kieContainer.getKieBase();
         kieBase.addEventListener(new WorkingMemoryInMemoryLogger());
+        //cache kieSession
+        for (int i = 0; i < kieSessionSize; i++) {
+            kieBase.newKieSession();
+        }
         return kieBase;
     }
 }
