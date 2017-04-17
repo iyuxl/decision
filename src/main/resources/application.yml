@@ -1,5 +1,5 @@
-logging:
-  level:
-    com.shj.service: info
 drools.sessionCache: async
 drools.task.size: 24
+server:
+  display-name: drools-test
+  port: 8080
