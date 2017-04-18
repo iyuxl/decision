@@ -11,12 +11,14 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <spring.boot.version>1.4.5.RELEASE</spring.boot.version>
         <org.drools.version>6.5.0.Final</org.drools.version>
+        <thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+        <thymeleaf-layout-dialect.version>2.0.4</thymeleaf-layout-dialect.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.1.RELEASE</version>
+        <version>1.4.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -29,6 +31,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -51,27 +57,27 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
-            <version>6.5.0.Final</version>
+            <version>${org.drools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
-            <version>6.5.0.Final</version>
+            <version>${org.drools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-decisiontables</artifactId>
-            <version>6.5.0.Final</version>
+            <version>${org.drools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-templates</artifactId>
-            <version>6.5.0.Final</version>
+            <version>${org.drools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-internal</artifactId>
-            <version>6.5.0.Final</version>
+            <version>${org.drools.version}</version>
         </dependency>
 
         <dependency>
