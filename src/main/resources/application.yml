@@ -3,3 +3,6 @@ drools.task.size: 24
 server:
   display-name: drools-test
   port: 8080
+spring:
+  thymeleaf:
+    cache: false
