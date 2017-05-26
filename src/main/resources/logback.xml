@@ -59,7 +59,7 @@
 	</appender>
 
 	<!-- 根，所有logger的祖先 -->
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="errorAppender" />
 		<appender-ref ref="infoAppender" />

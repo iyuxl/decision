@@ -1,10 +1,7 @@
 package com.shj.service.task;
 
 import com.google.common.collect.Lists;
-import com.shj.entity.LHS;
-import com.shj.service.DroolsService;
-import org.drools.core.SessionConfiguration;
-import org.drools.core.impl.EnvironmentFactory;
+import com.shj.entity.XFact;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
@@ -20,17 +17,17 @@ import java.util.concurrent.Callable;
 public class DroolsFiresTask implements Callable{
     private static final Logger LOG = LoggerFactory.getLogger(DroolsFiresTask.class);
 
-    private LHS lhs;
+    private XFact XFact;
     private KieBase kieBase;
-    public DroolsFiresTask(KieBase kieBase, LHS lhs) {
+    public DroolsFiresTask(KieBase kieBase, XFact XFact) {
         this.kieBase = kieBase;
-        this.lhs = lhs;
+        this.XFact = XFact;
     }
     @Override
     public Object call() throws Exception {
         long begin = System.currentTimeMillis();
         KieSession kieSession = kieBase.newKieSession();
-        kieSession.insert(lhs);
+        kieSession.insert(XFact);
         kieSession.fireAllRules();
         Iterator it = kieSession.getObjects().iterator();
         List<?> rs = Lists.newArrayList(it);

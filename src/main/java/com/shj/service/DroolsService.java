@@ -9,7 +9,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.shj.entity.FactResult;
-import com.shj.entity.LHS;
+import com.shj.entity.XFact;
 import com.shj.service.task.DroolsFiresTask;
 import org.apache.commons.io.IOUtils;
 import org.kie.api.KieBase;
@@ -27,10 +27,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by xiaoyaolan on 2017/3/30.
@@ -107,9 +105,10 @@ public class DroolsService {
         return true;
     }
 
-    public FactResult invokeAudit(LHS lhs) {
+    public List<FactResult> invokeAudit(XFact XFact) {
         long begin = System.currentTimeMillis();
-        DroolsFiresTask dt = new DroolsFiresTask(kieBase, lhs);
+        DroolsFiresTask dt = new DroolsFiresTask(kieBase, XFact);
+        List<FactResult> lists = Lists.newArrayList();
         try {
             ListenableFuture<List<?>> lf = listeningExecutorService.submit(dt);
             Futures.addCallback(lf, new FutureCallback<List<?>>() {
@@ -131,7 +130,7 @@ public class DroolsService {
             while (its.hasNext()) {
                 Object o = its.next();
                 if (o instanceof FactResult) {
-                    return (FactResult)o;
+                    lists.add ((FactResult) o);
                 }
             }
         } catch (Exception e) {
@@ -142,15 +141,15 @@ public class DroolsService {
                 LOG.info("invoke rule use time :" + (System.currentTimeMillis() - begin) + " ms");
             }
         }
-        return new FactResult();
+        return lists;
     }
 
-    public List<?> invokeAudit(List<LHS> lists) {
+    public List<?> invokeAudit(List<XFact> lists) {
         long begin = System.currentTimeMillis();
         KieSession kieSession = kieBase.newKieSession();
         long kieTime = System.currentTimeMillis();
         List<FactResult> frs = Lists.newArrayListWithExpectedSize(lists.size());
-        for (LHS object : lists) {
+        for (XFact object : lists) {
             kieSession.insert(object);
             kieSession.fireAllRules();
             Iterator it = kieSession.getObjects().iterator();
@@ -177,12 +176,12 @@ public class DroolsService {
         Resource[] files = listRules();
         reloadRules("rulestest/", files);
         KieSession kieSession = kieBase.newKieSession();
-        LHS lhs = new LHS();
-        lhs.put("name", "網易風雲");
-        lhs.put("a", "心網易風雲");
-        lhs.put("names", Lists.newArrayList("馬", "天上", "天數"));
-        lhs.put("email", "aaa");
-        kieSession.insert(lhs);
+        XFact XFact = new XFact();
+        XFact.put("name", "網易風雲");
+        XFact.put("a", "心網易風雲");
+        XFact.put("names", Lists.newArrayList("馬", "天上", "天數"));
+        XFact.put("email", "aaa");
+        kieSession.insert(XFact);
         kieSession.fireAllRules();
         Iterator it = kieSession.getObjects().iterator();
         kieSession.dispose();

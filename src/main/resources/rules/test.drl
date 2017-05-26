@@ -1,12 +1,45 @@
 package test
-import com.shj.entity.LHS
+import com.shj.entity.XFact
 import com.shj.entity.FactResult
 rule "Using Testing"
+salience 1
 when
-    $lhs:LHS()
+    XFact($test : this["test"],
+        $x : this["x"])
+    eval($test == "天天" || $x == "2")
+    eval(print("1111"))
     eval( true )
 then
     FactResult fr = new FactResult("Using Testing");
-    fr.put("test", $lhs.get("test"));
+    fr.put("test", $test);
     insert(fr);
 end
+
+rule "Using Testing3"
+salience 10
+no-loop true
+when
+    $XFact:XFact()
+    eval(print("Using Testing3"))
+    eval( true )
+then
+    FactResult fr = new FactResult("Using Testing3");
+    fr.put("test1", $XFact.get("test"));
+    insert(fr);
+end
+
+rule "Using Testing34"
+when
+    $XFact:XFact()
+    eval(print("Using Testing34"))
+    eval( true )
+then
+    FactResult fr = new FactResult("Using Testing34");
+    fr.put("test1", $XFact.get("test"));
+    insert(fr);
+end
+
+function boolean print(Object obj) {
+    System.out.println("=====" + obj);
+    return true;
+}

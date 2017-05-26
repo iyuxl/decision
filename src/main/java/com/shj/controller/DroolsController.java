@@ -2,7 +2,7 @@ package com.shj.controller;
 
 import com.google.common.collect.Lists;
 import com.shj.entity.FactResult;
-import com.shj.entity.LHS;
+import com.shj.entity.XFact;
 import com.shj.service.DroolsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,17 +22,17 @@ public class DroolsController {
     private DroolsService droolsService;
 
     @RequestMapping("/audit")
-    public @ResponseBody FactResult invokeRule(@RequestBody Map map) {
-        LHS lhs = new LHS();
-        lhs.putAll(map);
-        return droolsService.invokeAudit(lhs);
+    public @ResponseBody Object invokeRule(@RequestBody Map map) {
+        XFact XFact = new XFact();
+        XFact.putAll(map);
+        return droolsService.invokeAudit(XFact);
     }
 
     @RequestMapping("/auditList")
     public @ResponseBody List<FactResult> invokeRuleByList(@RequestBody Map map) {
-        LHS lhs = new LHS();
-        lhs.putAll(map);
-        List<LHS> lists = Lists.newArrayList(lhs);
+        XFact XFact = new XFact();
+        XFact.putAll(map);
+        List<XFact> lists = Lists.newArrayList(XFact);
         return (List<FactResult>) droolsService.invokeAudit(lists);
     }
 }
