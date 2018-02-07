@@ -27,12 +27,15 @@ public class DroolsFiresTask implements Callable{
     public Object call() throws Exception {
         long begin = System.currentTimeMillis();
         KieSession kieSession = kieBase.newKieSession();
-        kieSession.insert(XFact);
-        kieSession.fireAllRules();
-        Iterator it = kieSession.getObjects().iterator();
-        List<?> rs = Lists.newArrayList(it);
-        kieSession.dispose();
-        LOG.info("fire time use " + (System.currentTimeMillis() - begin));
-        return rs;
+        try {
+            kieSession.insert(XFact);
+            kieSession.fireAllRules();
+            Iterator it = kieSession.getObjects().iterator();
+            List<?> rs = Lists.newArrayList(it);
+            return rs;
+        } finally {
+            kieSession.dispose();
+            LOG.info("fire time use " + (System.currentTimeMillis() - begin));
+        }
     }
 }
