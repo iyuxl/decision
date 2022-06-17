@@ -10,7 +10,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <spring.boot.version>1.4.5.RELEASE</spring.boot.version>
-        <org.drools.version>6.5.0.Final</org.drools.version>
+        <org.drools.version>7.60.0.Final</org.drools.version>
         <thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
         <thymeleaf-layout-dialect.version>2.0.4</thymeleaf-layout-dialect.version>
     </properties>
